@@ -1,5 +1,4 @@
 # pylint: disable=missing-function-docstring
-import ast
 import sys
 
 def calc_levenshtein_distance(text1: str, text2: str) -> int:
@@ -28,14 +27,16 @@ def compare_files(text1: str, text2: str) -> float:
     text1_ref = refactor_file(text1)
     text2_ref = refactor_file(text2)
     result = calc_levenshtein_distance(text1_ref, text2_ref);
-    return 1 - float(result) / (len(text1_ref) + len(text2_ref))
+    return 1 - result / max(len(text1_ref), len(text2_ref))
 
 
 def main():
-    paths = sys.argv[1]
+    paths = open(sys.argv[1], "r")
+    scores = open(sys.argv[2], "w")
     for line in paths:
-        source = line.split()[0]
-        plagiat = line.split()[1]
+        source = open(line.split()[0], encoding='utf-8').read().strip()
+        plagiat = open(line.split()[1], encoding='utf-8').read().strip()
+        print(round(compare_files(source, plagiat), 2), file=scores)
 
 
 if __name__ == '__main__':
